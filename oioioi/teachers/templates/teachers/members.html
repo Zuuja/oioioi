@@ -1,5 +1,5 @@
 {% extends "base-with-menu.html" %}
-{% load i18n simple_filters %}
+{% load i18n simple_filters compress %}
 
 {% block title %}
     {% if member_type == 'teacher' %}
@@ -9,101 +9,237 @@
     {% endif %}
 {% endblock %}
 
+{% block styles %}
+    {{ block.super }}
+    {% compress css %}
+        <link charset="utf-8" rel="stylesheet" type="text/css" href="{{ STATIC_URL }}teachers/members.css">
+    {% endcompress %}
+{% endblock %}
+
 {% block main-content %}
-<h1>
-    {% if member_type == 'teacher' %}
-        {% trans "Contest teachers" %}
-    {% else %}
-        {% trans "Contest pupils" %}
-    {% endif %}
-</h1>
+<div class="container content">
+    <div class="row">
+        <div class="col-md-11">
+            <h1>
+                {% if member_type == 'teacher' %}
+                    {% trans "Contest teachers" %}
+                {% else %}
+                    {% trans "Contest pupils" %}
+                {% endif %}
+            </h1>
+        </div>
+    </div>
 
-{% if is_registration_active %}
-    {% if member_type == 'teacher' %}
-        <p>{% trans "To allow a teacher to access this contest, ask him/her to visit the following link:" %}</p>
-    {% else %}
-        <p>{% trans "To allow a pupil to access this contest, ask him/her to visit the following link:" %}</p>
-    {% endif %}
-    <pre id="registration_link">{{ registration_link }}</pre>
-    <p>
-        <a role="button" class="btn btn-info btn-xs" data-post-url="{% url 'teachers_disable_registration' contest_id=contest.id member_type=member_type %}">
-            {% trans "Disable link" %}
-        </a>
-        <a role="button" class="btn btn-default btn-xs" data-post-url="{% url 'teachers_regenerate_key' contest_id=contest.id member_type=member_type %}">
-            {% trans "Re-generate key" %}
-        </a>
-        <button class="btn btn-default btn-copy btn-xs" data-clipboard-target="#registration_link">
-            {% trans "Copy to clipboard" %}
-        </button>
-    </p>
-{% else %}
-    {% if member_type == 'teacher' %}
-        <p>{% trans "Registration of teachers is disabled." %}</p>
-    {% else %}
-        <p>{% trans "Registration of pupils is disabled." %}</p>
-    {% endif %}
-    <p>
-        <a role="button" class="btn btn-info" data-post-url="{% url 'teachers_enable_registration' contest_id=contest.id member_type=member_type %}">
-            {% trans "Re-enable registration" %}
-        </a>
-    </p>
-{% endif %}
-
-<form action="{% url 'teachers_delete_members' contest_id=contest.id member_type=member_type %}" method="post" id="delete-pupils-form">
-    {% csrf_token %}
-
-    <h2 class="members">{% trans "Members" %}</h2>
-
-    {% if members %}
+    <!--Context key: usergroups-->
+    {% if member_type == 'pupil' %}
         <div class="row">
-            {% for member in members %}
-                <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="member" value="{{ member.id }}" {% if member_type == 'teacher' and member == user %}disabled{% endif %}>
-                            {{ member.get_full_name }}
-                        </label>
+            <div class="col-md-11">
+                On this page you can view, add and remove pupils from the contest.
+                Currently, two options of managing pupils are available.<br>
+                First (newer one) is to add one of your user groups to the contest with all its users.
+                Alternatively, you can use older method of sharing access link with your pupils.<br>
+
+                <a href="#members-view" class="btn btn-default members-link"> Go to members </a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-11">
+                <h2 class="method-title">
+                    Groups
+                     <button class="disabled btn-link help-tooltip" href="#" data-toggle="tooltip" title="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas bibendum ac felis id commodo. Etiam mauris purus, fringilla id tempus in, mollis vel orci. Duis ultricies at erat eget iaculis.">
+                        <sup> <small>
+                            <i class="glyphicon glyphicon-question-sign"></i>
+                        </small> </sup>
+                     </button>
+                </h2>
+
+                <!--<p> You have not added any group to this contest yet. </p>-->
+
+                <div>
+                    <button class="btn btn-default add-group-top"> Add new group to this contest </button>
+                </div>
+
+                <div class="usergroup">
+                    <div class="text-center">
+                        <h5 class="mb-0">
+                            <button class="usergroup-title btn btn-link collapsed" data-toggle="collapse" data-target="#collapseOne" onclick="this.blur()">
+                                III Mi III Liceum Ogólnokształcące w Gdyni
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseOne" class="collapse usergroup-body">
+                        <div>
+                            <ul class="usergroup-user-list">
+                                <li> Marek Żochowski </li>
+                                <li> Piotr Wojtczak </li>
+                                <li> Wojciech  </li>
+                                <li> M B </li>
+                                <li> Piotr Wojtczak </li>
+                                <li> Wojciech Bączkowski </li>
+                                <li> Piotr Wojtczak </li>
+                                <li>  Bączkowski </li>
+                                <li> Marek Żochowski </li>
+                                <li> Piotr Wojtczak </li>
+                                <li> Wojciech Bączkowski </li>
+                                <li> Marek Żochowski </li>
+                                <li> Piotr Wojtczak </li>
+                                <li> Wojciech Bączkowski BączkowskiBączkowskiBączkowski </li>
+                                <li> Marek  </li>
+                                <li> Piotr Wojtczak </li>
+                                <li> Piotr Wojtczak </li>
+                                <li> Piotr Wojtczak </li>
+                                <li> Piotr Wojtczak </li>
+                                <li> &hellip; </li>
+                            </ul>
+                        </div>
+                        <div class="text-center">
+                            <button class="btn btn-primary group-button"> Modify group </button>
+                            <button class="btn btn-danger group-button"> Remove group from this contest </button>
+                        </div>
                     </div>
                 </div>
-            {% endfor %}
+
+                <div class="usergroup">
+                <div class="text-center">
+                    <h5 class="mb-0">
+                        <button class="usergroup-title btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" onclick="this.blur()">
+                            TAG 2018/2019
+                        </button>
+                    </h5>
+                </div>
+                <div id="collapseTwo" class="collapse usergroup-body">
+                    <div>
+                        <ul class="usergroup-user-list">
+                            <li> Szymon Acedański </li>
+                            <li> Marek Żochowski </li>
+                            <li> Piotr Wojtczak </li>
+                            <li> Wojciech Bączkowski </li>
+                            <li> Zuzanna Opała </li>
+                            <li> Artur Puzio </li>
+                            <li> Iwona Kotlarska </li>
+                            <li> Jakub Bartmiński </li>
+                            <li> Michał Sidor </li>
+                        </ul>
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-primary group-button"> Modify group </button>
+                        <button class="btn btn-danger group-button"> Remove group from this contest </button>
+                    </div>
+                </div>
+                </div>
+
+                <button class="btn btn-default add-group-bottom"> Add new group to this contest </button>
+            </div>
         </div>
-    {% else %}
-        <p class="text-center">
-            {% if member_type == 'teacher' %}
-                {% trans "No teachers." %}
-            {% else %}
-                {% trans "No pupils." %}
-            {% endif %}
-        </p>
     {% endif %}
 
-    <div class="form-group">
-        <button type="button" class="btn btn-default btn-sm"
-            onclick="$('#delete-pupils-form input[type=\'checkbox\']').not('[disabled]').prop('checked', true)">
-            {% trans "Select all" %}
-        </button>
-        <button type="button" class="btn btn-default btn-sm"
-            onclick="$('#delete-pupils-form input[type=\'checkbox\']').not('[disabled]').prop('checked', false)">
-            {% trans "Select none" %}
-        </button>
-        <button type="submit" class="btn btn-danger btn-sm">{% trans "Delete selected" %}</button>
-        {% if other_contests %}
-            <span class="dropdown">
-                <button type="button" class="btn btn-default btn-sm dropdown-toggle"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    {% trans "Add from other contest" %} <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    {% for c in other_contests %}
-                        <li>
-                            <a data-post-url="{% url 'teachers_bulk_add_members' contest_id=contest.id other_contest_id=c.id %}">
-                                {{ c }}
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </span>
-        {% endif %}
+    <div class="row">
+        <div class="col-md-11">
+            <h2 class="method-title" id="members-view">
+                {% trans "Members" %}
+                <button class="disabled btn-link help-tooltip" data-toggle="tooltip" title="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas bibendum ac felis id commodo. Etiam mauris purus, fringilla id tempus in, mollis vel orci. Duis ultricies at erat eget iaculis.">
+                     <sup> <small>
+                        <i class="glyphicon glyphicon-question-sign"></i>
+                    </small> </sup>
+                 </button>
+            </h2>
+
+            {% if is_registration_active %}
+                {% if member_type == 'teacher' %}
+                    <p>{% trans "To allow a teacher to access this contest, ask them to visit the following link:" %}</p>
+                {% else %}
+                    <p>{% trans "To allow a pupil to access this contest, ask them to visit the following link:" %}</p>
+                {% endif %}
+                <pre id="registration_link">{{ registration_link }}</pre>
+                <p>
+                    <a role="button" class="btn btn-info btn-xs" data-post-url="{% url 'teachers_disable_registration' contest_id=contest.id member_type=member_type %}">
+                        {% trans "Disable link" %}
+                    </a>
+                    <a role="button" class="btn btn-default btn-xs" data-post-url="{% url 'teachers_regenerate_key' contest_id=contest.id member_type=member_type %}">
+                        {% trans "Re-generate key" %}
+                    </a>
+                    <button class="btn btn-default btn-copy btn-xs" data-clipboard-target="#registration_link">
+                        {% trans "Copy to clipboard" %}
+                    </button>
+                </p>
+            {% else %}
+                {% if member_type == 'teacher' %}
+                    <p>{% trans "Registration of teachers is disabled." %}</p>
+                {% else %}
+                    <p>{% trans "Registration of pupils is disabled." %}</p>
+                {% endif %}
+                <p>
+                    <a role="button" class="btn btn-info" data-post-url="{% url 'teachers_enable_registration' contest_id=contest.id member_type=member_type %}">
+                        {% trans "Re-enable registration" %}
+                    </a>
+                </p>
+            {% endif %}
+
+            <!--Context key: usergroups-->
+            {% if member_type == 'pupil' %}
+                <div class="text-center">
+                    <button class="convert-members btn-lg btn-primary"> Create new group from this contest's members </button>
+                </div>
+            {% endif %}
+
+            <form action="{% url 'teachers_delete_members' contest_id=contest.id member_type=member_type %}" method="post" id="delete-pupils-form">
+                {% csrf_token %}
+
+                {% if members %}
+                    <div class="row">
+                        {% for member in members %}
+                            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="member" value="{{ member.id }}" {% if member_type == 'teacher' and member == user %}disabled{% endif %}>
+                                        {{ member.get_full_name }}
+                                    </label>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-center">
+                        {% if member_type == 'teacher' %}
+                            {% trans "No teachers." %}
+                        {% else %}
+                            {% trans "No pupils." %}
+                        {% endif %}
+                    </p>
+                {% endif %}
+
+                <div class="form-group">
+                    <button type="button" class="btn btn-default btn-sm"
+                        onclick="$('#delete-pupils-form input[type=\'checkbox\']').not('[disabled]').prop('checked', true)">
+                        {% trans "Select all" %}
+                    </button>
+                    <button type="button" class="btn btn-default btn-sm"
+                        onclick="$('#delete-pupils-form input[type=\'checkbox\']').not('[disabled]').prop('checked', false)">
+                        {% trans "Select none" %}
+                    </button>
+                    <button type="submit" class="btn btn-danger btn-sm">{% trans "Delete selected" %}</button>
+                    {% if other_contests %}
+                        <span class="dropdown">
+                            <button type="button" class="btn btn-default btn-sm dropdown-toggle"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {% trans "Add from other contest" %} <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                {% for c in other_contests %}
+                                    <li>
+                                        <a data-post-url="{% url 'teachers_bulk_add_members' contest_id=contest.id other_contest_id=c.id %}">
+                                            {{ c }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </span>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
     </div>
-</form>
+</div>
+
 {% endblock %}
