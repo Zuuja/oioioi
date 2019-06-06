@@ -5,13 +5,6 @@
     {% trans "User group details" %}
 {% endblock %}
 
-{% block styles %}
-    {{ block.super }}
-    {% compress css %}
-        <link charset="utf-8" rel="stylesheet" type="text/css" href="{{ STATIC_URL }}usergroups/common/sharing.css">
-    {% endcompress %}
-{% endblock %}
-
 {% block main-content %}
 <h1>
     {% trans "Group " %}{{ usergroup.name }}
