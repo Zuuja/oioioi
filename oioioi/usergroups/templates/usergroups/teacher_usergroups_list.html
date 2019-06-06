@@ -17,7 +17,7 @@
 
 <div id="usergroups-list">
     {% if not usergroup_list %}
-        {% trans "You don't have any defined user groups at the moment." %}
+        <p>{% trans "You don't have any defined user groups at the moment." %}</p>
     {% else %}
         {% autopaginate usergroup_list 20 %}
         {% paginate %}
@@ -31,9 +31,7 @@
     {% endif %}
 </div>
 
-
 <div id="add-new-usergroup">
     <a role="button" class="btn btn-success" href="{% url 'teacher_usergroups_add_group' %}"> {% trans "Add new group" %} </a>
 </div>
-
 {% endblock %}
