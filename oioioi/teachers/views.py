@@ -159,6 +159,9 @@ def members_view(request, member_type):
                 'registration_link': registration_link,
                 'other_contests': other_contests,
                 'is_registration_active': is_registration_active,
+                'usergroups_active': True,
+                'has_usergroup': True,
+                'usergroups': UserGroup.objects.all()
             })
 
 
