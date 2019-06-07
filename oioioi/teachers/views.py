@@ -117,7 +117,6 @@ def accept_teacher_view(request, user_id):
                 " new teacher."))
     return redirect('oioioiadmin:teachers_teacher_changelist')
 
-from oioioi.usergroups.models import UserGroup
 
 @contest_admin_menu_registry.register_decorator(_("Pupils"), lambda request:
         reverse('show_members', kwargs={'contest_id': request.contest.id,
